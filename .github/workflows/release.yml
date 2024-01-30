@@ -42,6 +42,8 @@ jobs:
         run: |
           mkdir -p ./temp/kinetix_fivem
           cp -r ./{kinetix_anim,kinetix_mod,README.md} ./temp/kinetix_fivem
+          mkdir -p ./temp/kinetix_fivem/kinetix_anim/stream
+          mkdir -p ./temp/kinetix_fivem/kinetix_mod/stream
           cd ./temp && zip -r ../kinetix_fivem.zip ./kinetix_fivem
 
       - name: Create Release
