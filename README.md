@@ -6,6 +6,10 @@
 
 A FiveM resource integrating user generated emotes in game through to the Kinetix powerful ML motion capture system.
 
+> [!WARNING]  
+> This is still an early version that is not bug free.
+
+
 ### Prerequisite
 
 This mod requires : 
@@ -27,6 +31,10 @@ Extract the zip file into your server's resource folder.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](game_creation.png)
 
+- Enable the GTA V pipeline in your app settings
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](settings.png)
+
 - Create an API Key
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](key_creation.png)
@@ -40,3 +48,11 @@ Extract the zip file into your server's resource folder.
   add_ace resource.kinetix_mod command.stop allow
   add_ace resource.kinetix_mod command.refresh allow
   ```
+
+- Restart the server
+
+### Usage
+
+The default key to open the animation creation menu is `F5`. This can be changed in kinetix_mod/client/core.lua
+
+The default key to open the emote wheel is `Z`, the default ox_lib's radial menu shortcut. 
