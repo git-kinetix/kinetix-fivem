@@ -8,6 +8,7 @@ shared_scripts {
 }
 
 client_script {
+	'client/ox_wheel.lua',
     'client/ox_interface.lua',
     'client/core.lua',
 }
