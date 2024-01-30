@@ -1,6 +1,7 @@
 ![](https://img.shields.io/github/downloads/git-kinetix/kinetix-fivem/total?logo=github&link=https%3A%2F%2Fgithub.com%2Fgit-kinetix%2Fkinetix-fivem%2Freleases)
 ![](https://img.shields.io/github/downloads/git-kinetix/kinetix-fivem/total?logo=github&link=https%3A%2F%2Fgithub.com%2Fgit-kinetix%2Fkinetix-fivem%2Freleases%2Flatest)
 ![](https://img.shields.io/github/v/release/git-kinetix/kinetix-fivem?logo=github)
+![](https://img.shields.io/github/license/git-kinetix/kinetix-fivem)
 
   # kinetix-fivem
 
@@ -17,7 +18,7 @@ A FiveM resource integrating user generated emotes in game through to the Kineti
 
 This mod requires : 
 - [ox_lib](https://github.com/overextended/ox_lib)
-- [fivem_webbed](https://github.com/overextended/ox_lib)
+- [_fivem_webbed_](https://github.com/Cyntaax/fivem-webbed)
 
 ### Installation
 
