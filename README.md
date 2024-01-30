@@ -9,6 +9,9 @@ A FiveM resource integrating user generated emotes in game through to the Kineti
 > [!WARNING]  
 > This is still an early version that is not bug free.
 
+> [!CAUTION]  
+> Kinetix emotes creation is a paid service.
+
 
 ### Prerequisite
 
