@@ -1,5 +1,5 @@
-![https://github.com/git-kinetix/kinetix-fivem/releases](https://img.shields.io/github/downloads/git-kinetix/kinetix-fivem/total?logo=github&link=https%3A%2F%2Fgithub.com%2Fgit-kinetix%2Fkinetix-fivem%2Freleases)
-![https://github.com/git-kinetix/kinetix-fivem/releases/latest](https://img.shields.io/github/downloads/git-kinetix/kinetix-fivem/total?logo=github&link=https%3A%2F%2Fgithub.com%2Fgit-kinetix%2Fkinetix-fivem%2Freleases%2Flatest)
+![https://github.com/git-kinetix/kinetix-fivem/releases](https://img.shields.io/github/downloads/git-kinetix/kinetix-fivem/total?logo=github)
+![https://github.com/git-kinetix/kinetix-fivem/releases/latest](https://img.shields.io/github/downloads/git-kinetix/kinetix-fivem/latest/total?logo=github)
 ![https://github.com/git-kinetix/kinetix-fivem/releases/latest](https://img.shields.io/github/v/release/git-kinetix/kinetix-fivem?logo=github)
 ![https://github.com/git-kinetix/kinetix-fivem?tab=MIT-1-ov-file#readme](https://img.shields.io/github/license/git-kinetix/kinetix-fivem)
 
