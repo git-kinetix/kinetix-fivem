@@ -5,13 +5,13 @@
 
   # kinetix-fivem
 
-A FiveM resource integrating user generated emotes in game through to the Kinetix powerful ML motion capture system.
+This is a FiveM resource allowing servers to integrate a User-Generated Emote feature. Servers that integrate it will empower their players to craft custom emotes (3D animations) from a video, directly in the game, and play it on their avatar. 
 
 > [!WARNING]  
-> This is still an early version that is not bug free.
+> This version is in its early stages, and we are actively addressing bugs to enhance its reliability.
 
 > [!CAUTION]  
-> Kinetix emotes creation is a paid service.
+> This resource relies on Kinetix's User-Generated Emote technology. The access to Kinetix's technology on FiveM servers is free, until further notice.
 
 
 ### Prerequisite
