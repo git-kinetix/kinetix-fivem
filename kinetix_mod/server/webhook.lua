@@ -4,8 +4,8 @@ function GetServerIdFromIdentifier(identifier)
     local wanted_id = nil
 
     for k, v in pairs(GetPlayers()) do
-        local playerIdentifiers = GetPlayerIdentifiers(v)
-        local userId = GetLicense(playerIdentifiers)
+        local userId = GetUserId(v)
+
         local id = tonumber(v)
         if userId == identifier then
                 wanted_id = id
@@ -20,7 +20,7 @@ webhookRouter:Post("/:param", function(req, res)
     local playerId = GetServerIdFromIdentifier(body.user)
 
     if body.status == "gta_done" then
-        DownloadYCD(body, playerId)
+        DownloadYCD(body, playerId, true, true)
     else
         if playerId ~= nil then
             TriggerClientEvent("process_update", playerId, body)
