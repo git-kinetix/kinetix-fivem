@@ -1,5 +1,5 @@
-local url = 'https://sdk-api.dev.kinetix.tech'
-local apiKey = 'a05ed51861c73f41cf321a061b518bc1'
+local url = 'https://sdk-api.kinetix.tech'
+local apiKey = 'PLACE YOUR API KEY HERE !'
 
 local headers = {
     ["Content-Type"] = "application/json",
