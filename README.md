@@ -30,20 +30,20 @@ Extract the zip file into your server's resource folder.
 
 - Create an account on Kinetix's [Developer Portal](https://portal.kinetix.tech).
 
-- Select "Get our SDK"
-  - In the webhook field, set your server's public IP / Domain name with '/kinetix_mod/webhook/updates' (eg. https://my-server.com/kinetix_mod/webhook/updates)
+- Get started by creating an App
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](game_creation.png)
 
-- Enable the GTA V pipeline in your app settings
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](settings.png)
-
-- Create an API Key
+- In the dashboard page, generate an API Key and set it in your kinetix_mod resource (kinetix_mod/server/core.lua)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](key_creation.png)
 
-- Set this API Key in kinetix_mod/server/core.lua
+- Get to the setting page
+  - In the webhook field, set your server's public IP / Domain name with '/kinetix_mod/webhook/updates' 
+    - example : https://my-server.com/kinetix_mod/webhook/updates
+  - Enable the YCD file generation
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](settings.png)
 
 - Add these ACE rules in your server config
   ```
@@ -59,4 +59,4 @@ Extract the zip file into your server's resource folder.
 
 The default key to open the animation creation menu is `F5`. This can be changed in kinetix_mod/client/core.lua
 
-The default key to open the emote wheel is `Z`, the default ox_lib's radial menu shortcut. 
+The default key to open the emote wheel is `Z` (or `W`), the default ox_lib's radial menu shortcut. 
