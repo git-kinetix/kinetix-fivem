@@ -1,5 +1,6 @@
-local url = 'https://sdk-api.kinetix.tech'
-local apiKey = 'PLACE YOUR API KEY HERE !'
+local url = 'https://sdk-api.dev.kinetix.tech'
+local apiKey = 'a05ed51861c73f41cf321a061b518bc1'
+local configuration = {}
 
 local headers = {
     ["Content-Type"] = "application/json",
@@ -59,14 +60,18 @@ function GetProcesses(userId, callback)
     end, "GET", "", headers)
 end
 
+function GetConfig(callback)
+    local configRoute = string.format('/v1/virtual-world/config', tostring(userId))
+
+    PerformHttpRequest(url .. configRoute, function(statusCode, response, responseHeaders)
+        callback(response)
+    end, "GET", "", headers)
+end
+
 function GetAvailableEmotes(userId, callback)
     local emotesRoutes = string.format('/v1/users/%s/emotes', tostring(userId))
     PerformHttpRequest(url .. emotesRoutes, function(statusCode, response, responseHeaders)
         local responseObject = json.decode(response)
-        if not responseObject then
-            callback({})
-            return
-        end
         -- Ensure file is properly loaded, if the webhook call was missed
 		local hasToRestart = false
         for _, emote in pairs(responseObject) do
@@ -92,7 +97,6 @@ end
 
 function RequestQRCode(userId, callback)
     local tokenRoute = '/v1/process/token'
-
     PerformHttpRequest(url .. tokenRoute .. '?userId=' .. userId, function(statusCode, response, responseHeaders)
         local responseObject = json.decode(response)
         callback(statusCode, responseObject?.url)
@@ -151,6 +155,9 @@ function DeleteEmote(userId, emoteUuid, callback)
     })
 
     PerformHttpRequest(url .. deletionRoute, function(statusCode, response, responseHeaders)
+		if statusCode == 200 then
+
+		end
         callback(response)
     end, "DELETE", postData, headers)
 end
@@ -167,6 +174,29 @@ function RenameEmote(userId, emoteUuid, name, callback)
     end, "PUT", postData, headers)
 end
 
+function GetEmotePreview(emoteUuid, callback)
+    local updateRoute = string.format('/v1/emotes/%s', emoteUuid)
+
+    PerformHttpRequest(url .. updateRoute, function(statusCode, response, responseHeaders)
+        callback(response)
+    end, "GET", "", headers)
+end
+
+function RetakeProcess(processUuid, callback)
+    local retakeRoute = string.format('/v1/process/%s/retake', processUuid)
+
+    PerformHttpRequest(url .. retakeRoute, function(statusCode, response, responseHeaders)
+        callback(response)
+    end, "POST", "", headers)
+end
+
+function ValidateProcess(processUuid, callback)
+    local validateRoute = string.format('/v1/process/%s/validate', processUuid)
+
+    PerformHttpRequest(url .. validateRoute, function(statusCode, response, responseHeaders)
+        callback(response)
+    end, "POST", "", headers)
+end
 
 RegisterNetEvent("requestInit")
 AddEventHandler("requestInit", function()
@@ -188,8 +218,8 @@ AddEventHandler("requestQRCode", function()
     BeforeQRCode(userId, function()
         RequestQRCode(userId, function(statusCode, qrCodeUrl)
             AfterQRCode(userId, statusCode, function()
-                if statusCode == 403 then
-                    return TriggerClientEvent("qr_code_error", _source)
+                if statusCode >= 400 then
+                    return TriggerClientEvent("qr_code_error", _source, statusCode)
                 elseif statusCode == 200 then
                     return TriggerClientEvent("qr_code_response", _source, qrCodeUrl)
 				end
@@ -235,4 +265,59 @@ AddEventHandler("deleteEmote", function(data)
 			TriggerClientEvent("reopen_bag", _source)
 		end)
 	end)
+end)
+
+AddEventHandler("playerConnecting", function()
+	local _source = source
+	local config = GetConfig(function()
+		TriggerClientEvent("config", _source, config)
+		configuration = config
+	end)
+
+end)
+
+AddEventHandler('onResourceStart', function(resourceName)
+	if (GetCurrentResourceName() ~= resourceName) then
+		return
+	end
+	GetConfig(function(config)
+		Wait(1000) -- Ensure the client has time to restart as well
+		TriggerClientEvent("config", -1, config)
+	end)
+end)
+
+RegisterNetEvent("requestEmotePreview")
+AddEventHandler('requestEmotePreview', function(process)
+	local _source = source
+	GetEmotePreview(process.emote, function(response)
+		local emote = json.decode(response)
+		local icon
+		for _, obj in ipairs(emote.files) do
+            if obj.extension == 'gif' and obj.name == 'thumbnail' then
+                icon = obj.url
+            end
+        end
+		TriggerClientEvent("emote_preview", _source, {uuid = process.uuid, emote = process.emote, thumbnail = icon, hierarchy = process.hierarchy})
+	end)
+end)
+
+
+RegisterNetEvent("requestRetake")
+AddEventHandler('requestRetake', function(processUuid)
+	local _source = source
+	RetakeProcess(processUuid, function(response)
+		TriggerClientEvent("retake_process", _source, response)
+	end)
+end)
+
+RegisterNetEvent("requestValidate")
+AddEventHandler('requestValidate', function(processUuid)
+	local _source = source
+	ValidateProcess(processUuid, function(response)
+		DownloadYCD(json.decode(response), _source, true, true)
+	end)
+end)
+
+exports("getConfiguration", function()
+    return configuration
 end)

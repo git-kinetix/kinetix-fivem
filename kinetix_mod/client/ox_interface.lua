@@ -1,9 +1,25 @@
+local title = [[
+#### Emote Creator
+]]
+
 local titleTemplate = [[
 #### Emote %s
 ]]
 local contentTemplate = [[You are going to delete the emote "%s".
 
 This action cannot be reverted.]]
+
+local QRCodeTemplate = [[Scan this QR and follow the instructions.
+
+![QRCode](https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=%s)]]
+
+
+local EmoteValidationTemplate = [[This is your emote preview.
+
+Do you validate the output or do you want to retry the process.
+
+![QRCode](%s)
+You have %s retry left.]]
 
 function GetTitle(name)
 	return string.format(titleTemplate, name)
@@ -21,6 +37,23 @@ function CreateRootMenu()
         },
         }
     })
+end
+
+function CreateQRCodeAlert(url)
+	isQRCodeAlertOpened = true
+	local alert = lib.alertDialog({
+		header = 'Create Emote',
+		content = string.format(QRCodeTemplate, url),
+		centered = true,
+		size = 'sm',
+		labels = {
+			confirm = 'cancel',
+			cancel = true,
+		}
+	})
+	if alert ~= nil then
+		isQRCodeAlertOpened = false
+	end
 end
 
 function CreateMainMenu()
@@ -127,8 +160,60 @@ function CreateEmoteBagMenu(emotes)
 
 end
 
+function CreateProcessValidationMenu(process)
+	local configuration = exports.kinetix_mod:getConfiguration()
+    local retryCount = 0
+	if configuration.ugcValidation.maxRetry ~= nil then
+		retryCount = configuration.ugcValidation.maxRetry - process.hierarchy.parents;
+	end
+	if retryCount < 0 then retryCount = 0 end
+	local canCancel = retryCount > 0
+	local alert = lib.alertDialog({
+		header = 'Validate Emote',
+		content = string.format(EmoteValidationTemplate, process.thumbnail, retryCount ),
+		centered = true,
+		cancel = canCancel,
+		size = 'md',
+		labels = {
+			confirm = 'Validate',
+			cancel = 'Retake',
+		}
+	})
+
+	if alert ~= 'confirm' then
+		if canCancel == false then
+			lib.showContext('create_anim_root')
+			TriggerServerEvent("requestInit")
+			return
+		end
+		local confirmAlert = lib.alertDialog({
+			header = 'Retake Emote',
+			content = 'Are you sure you want to retry the process ?',
+			centered = true,
+			cancel = true,
+			size = 'md',
+		})
+		if confirmAlert ~= 'confirm' then
+			lib.showContext('create_anim_root')
+			TriggerServerEvent("requestInit")
+		else
+			TriggerServerEvent('requestRetake', process.uuid)
+		end
+	else
+		TriggerServerEvent('requestValidate', process.uuid)
+	end
+
+end
+
+function RequestEmotePreview(process)
+	TriggerServerEvent('requestEmotePreview', process)
+end
+
+local processesCache = {}
+
 function CreateEmoteCreatorMenu(processes)
     local options = {}
+	processesCache = processes
     table.insert(options, {
         title = 'Create a new emote',
         icon = 'fa-solid fa-plus',
@@ -140,50 +225,94 @@ function CreateEmoteCreatorMenu(processes)
     local iconMap = {
         ["pending"] = {
             icon = 'fa-solid fa-hourglass-half',
-            color = 'white'
+            color = 'white',
+			description = 'Servers are warming up ...'
         },
         ["processing"] = {
             icon = 'fa-solid fa-gear',
-            color = 'yellow'
+            color = 'yellow',
+			description = "Servers are processing ...",
+			progress = true,
         },
         ["done"] = {
             icon = 'fa-solid fa-circle-check',
-            color = 'green'
+            color = 'green',
+			onSelect = RequestEmotePreview,
+			arrow = true,
+			description = "Waiting for validation ..."
         },
         ["validated"] = {
             icon = 'fa-solid fa-circle-check',
-            color = 'green'
+            color = 'green',
+			description = "Ready to use !"
+        },
+		["failed"] = {
+            icon = 'fa-solid fa-circle-xmark',
+            color = 'red',
+			description = "An error occured !"
+        },
+		["rejected"] = {
+            icon = 'fa-solid fa-circle-xmark',
+            color = 'red',
+			onSelect = function(process)
+				TriggerServerEvent('requestRetake', process.uuid)
+			end,
+			arrow = true,
+			description = "Waiting for a new video ..."
         },
     }
+
     for _, process in pairs(json.decode(processes)) do
-        table.insert(options, {
-            title = process.name,
-            progress = process.progression,
-            colorScheme = 'blue.5',
-            icon = iconMap[process.status].icon,
-            iconColor = iconMap[process.status].color,
-            arraow = true,
-            metadata = {
-                {label = 'Status', value = process.status},
-                {label = 'Date', value = process.createdAt},
-                {label = 'Uuid', value = process.emote}
-              },
-        })
+		local arrow = process.status == 'done'
+		local icon
+		local description
+
+		local hasChildren = false
+		if process.hierarchy ~= nil then
+			if process.hierarchy.children > 0 then
+				hasChildren = true
+			end
+		end
+
+		print(process.status)
+		if hasChildren == true then icon = 'fa-solid fa-arrows-rotate' else icon = iconMap[process.status].icon end
+		if hasChildren == true then description = 'Process has been retaken' else description = iconMap[process.status].description end
+		if hasChildren == false then
+			table.insert(options, {
+				title = process.name,
+				progress = iconMap[process.status].progress and process.progression,
+				description = description,
+				colorScheme = 'blue.5',
+				disabled = disabled,
+				icon = icon,
+				iconColor = iconMap[process.status].color,
+				arrow = iconMap[process.status].arrow,
+				args = process,
+				onSelect = iconMap[process.status].onSelect,
+				metadata = {
+					{label = 'Status', value = process.status},
+					{label = 'Date', value = process.createdAt},
+					{label = 'Uuid', value = process.emote}
+				  },
+			})
+		end
     end
 
     lib.registerContext({
         id = 'create_anim_processes',
-        title = GetTitle('Creator'),
+        title = title,
         options = options,
 		menu = 'main_menu'
       })
       lib.showContext('create_anim_processes')
 end
 
+local isQRCodeAlertOpened = false
+
 function CreateQRCodeMenu(url)
     lib.registerContext({
         id = 'create_anim_qr_code',
-        title = GetTitle('Creator'),
+        title = title,
         menu = 'create_anim_processes',
         options = {
           {
@@ -192,22 +321,36 @@ function CreateQRCodeMenu(url)
             icon = 'fa-solid fa-circle-notch',
             iconAnimation = 'spin',
             arrow = true,
-            image = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' .. url
+            image = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' .. url,
+			onSelect = function()
+				CreateQRCodeAlert()
+			end
           },
         }
       })
       lib.showContext('create_anim_qr_code')
 end
 
-function CreateErrorMenu()
+function CreateErrorMenu(statusCode)
+	local errorMap = {
+		[403] = {
+			title = "Plan limit reached",
+			description = "You cannot create any new emote."
+		},
+		[429] = {
+			title = "Rate limiting reached",
+			description = "You cannot do new request for the moment."
+		}
+	}
+	local currentError = errorMap[statusCode]
     lib.registerContext({
         id = 'error_qr_code',
-        title = GetTitle('Creator'),
+        title = title,
         menu = 'create_anim_processes',
         options = {
           {
-            title = 'Plan limit reached',
-            description = 'You cannot create any new emote.',
+            title = currentError.title,
+            description = currentError.description,
             icon = 'fa-solid fa-circle-xmark',
 			iconColor = 'red'
           },
@@ -217,6 +360,7 @@ function CreateErrorMenu()
 end
 
 function NotifyProcessUpdate(data)
+	if data.status == 'validated' then return end
     lib.notify({
         id = 'process_update',
         title = 'Emote status progression',

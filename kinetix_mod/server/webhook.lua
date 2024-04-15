@@ -20,7 +20,10 @@ webhookRouter:Post("/:param", function(req, res)
     local playerId = GetServerIdFromIdentifier(body.user)
 
     if body.status == "gta_done" then
-        DownloadYCD(body, playerId, true, true)
+		local configuration = exports.kinetix_mod:getConfiguration()
+		if configuration.ugcValidation ~= nil and configuration.ugcValidation ~= false then
+			DownloadYCD(body, playerId, true, true)
+		end
     else
         if playerId ~= nil then
             TriggerClientEvent("process_update", playerId, body)
