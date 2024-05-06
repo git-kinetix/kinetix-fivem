@@ -274,7 +274,6 @@ function CreateEmoteCreatorMenu(processes)
 			end
 		end
 
-		print(process.status)
 		if hasChildren == true then icon = 'fa-solid fa-arrows-rotate' else icon = iconMap[process.status].icon end
 		if hasChildren == true then description = 'Process has been retaken' else description = iconMap[process.status].description end
 		if hasChildren == false then

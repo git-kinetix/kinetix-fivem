@@ -269,7 +269,8 @@ end)
 
 AddEventHandler("playerConnecting", function()
 	local _source = source
-	local config = GetConfig(function()
+	GetConfig(function(config)
+		Wait(1000) -- Ensure the client has time to restart as well
 		TriggerClientEvent("config", _source, config)
 		configuration = config
 	end)
