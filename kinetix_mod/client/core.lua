@@ -1,6 +1,8 @@
 TriggerServerEvent("requestAvailableEmotes")
 
 local configuration
+TriggerServerEvent("requestConfiguration")
+
 
 RegisterCommand('kinetix_anim', function(source, params)
 	local dictName = params[1] .. '@animation'

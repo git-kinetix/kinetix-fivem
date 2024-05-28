@@ -267,16 +267,6 @@ AddEventHandler("deleteEmote", function(data)
 	end)
 end)
 
-AddEventHandler("playerConnecting", function()
-	local _source = source
-	GetConfig(function(config)
-		Wait(1000) -- Ensure the client has time to restart as well
-		TriggerClientEvent("config", _source, config)
-		configuration = config
-	end)
-
-end)
-
 AddEventHandler('onResourceStart', function(resourceName)
 	if (GetCurrentResourceName() ~= resourceName) then
 		return
@@ -284,6 +274,7 @@ AddEventHandler('onResourceStart', function(resourceName)
 	GetConfig(function(config)
 		Wait(1000) -- Ensure the client has time to restart as well
 		TriggerClientEvent("config", -1, config)
+		configuration = config
 	end)
 end)
 
@@ -316,6 +307,15 @@ AddEventHandler('requestValidate', function(processUuid)
 	local _source = source
 	ValidateProcess(processUuid, function(response)
 		DownloadYCD(json.decode(response), _source, true, true)
+	end)
+end)
+
+RegisterNetEvent("requestConfiguration")
+AddEventHandler("requestConfiguration", function(processUuid)
+	local _source = source
+	GetConfig(function(config)
+		TriggerClientEvent("config", _source, config)
+		configuration = config
 	end)
 end)
 
