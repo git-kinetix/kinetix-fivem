@@ -74,18 +74,33 @@ function GetAvailableEmotes(userId, callback)
         local responseObject = json.decode(response)
         -- Ensure file is properly loaded, if the webhook call was missed
 		local hasToRestart = false
+		local missing = 0
+		local processed = 0
+		for _, emote in pairs(responseObject) do
+			local fileName = 'stream/' .. emote.data.uuid .. '@animation.ycd'
+			if not file_exists(fileName) then
+				print('detected missing')
+				print(fileName)
+				print('=====')
+				missing = missing + 1
+			end
+		end
         for _, emote in pairs(responseObject) do
             local fileName = 'stream/' .. emote.data.uuid .. '@animation.ycd'
             if not file_exists(fileName) then
-				hasToRestart = true
-                DownloadYCD({ emote = emote.data.uuid }, source, true, false)
+                DownloadYCD({ emote = emote.data.uuid }, source, false, false, function(response)
+					processed = processed + 1
+					if response == true then
+						hasToRestart = true
+					end
+					if missing == processed and hasToRestart == true then
+						ExecuteCommand('refresh')
+						ExecuteCommand('restart kinetix_anim')
+						TriggerClientEvent("emote_ready", -1, {})
+					end
+				end)
             end
         end
-		if hasToRestart == true then
-			ExecuteCommand('refresh')
-			ExecuteCommand('restart kinetix_anim')
-			TriggerClientEvent("emote_ready", -1, {})
-		end
         callback(responseObject)
     end, "GET", "", headers)
 end
@@ -115,20 +130,26 @@ function AfterQRCode(userId, statusCode, callback)
     callback()
 end
 
-function DownloadYCD(body, playerId, refresh, notify)
+function DownloadYCD(body, playerId, refresh, notify, cb)
     local route = '/v1/emotes/' .. body.emote
     PerformHttpRequest(url .. route, function(statusCode, response, responseHeaders)
         local responseObject = json.decode(response)
-        local url = ''
+        local fileUrl = ''
         for _, obj in ipairs(responseObject.files) do
             if obj.extension == 'ycd' then
-                url = obj.url
+                fileUrl = obj.url
             end
         end
 
         local fileName = 'stream/' .. body.emote .. '@animation.ycd'
+		if fileUrl == '' then
+			if cb ~= nil then
+				cb(false)
+			end
+			return
+		end
 
-        PerformHttpRequest(url, function(fileStatusCode, fileResponse, fileHeaders)
+        PerformHttpRequest(fileUrl, function(fileStatusCode, fileResponse, fileHeaders)
             if fileStatusCode == 200 then
 				SaveResourceFile('kinetix_anim', fileName, fileResponse, string.len(fileResponse))
 				if refresh == true then
@@ -139,7 +160,13 @@ function DownloadYCD(body, playerId, refresh, notify)
 					TriggerClientEvent("emote_ready", -1, body)
                     TriggerClientEvent("emote_ready_notify", playerId, body)
                 end
+				if cb ~= nil then
+					cb(true)
+				end
             else
+				if cb ~= nil then
+					cb(false)
+				end
                 print("Error downloading the file : " .. fileName)
             end
         end, "GET", "", headers)
