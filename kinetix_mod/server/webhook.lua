@@ -26,6 +26,10 @@ webhookRouter:Post("/:param", function(req, res)
 		end
     else
         if playerId ~= nil then
+            if (body.status == 'baking') then
+                PaywallAfter(playerId, body)
+                TriggerClientEvent("process_creation", playerId, body)
+            end
             TriggerClientEvent("process_update", playerId, body)
         end
     end

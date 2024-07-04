@@ -120,7 +120,6 @@ AddEventHandler("retake_process", function(data)
 	CreateQRCodeAlert(retakeData.url)
 end)
 
-
 exports("getConfiguration", function()
     return configuration
 end)

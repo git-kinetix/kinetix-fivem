@@ -119,15 +119,15 @@ function RequestQRCode(userId, callback)
 end
 
 -- Called before a QR Code request. Add your paywall conditions here
-function BeforeQRCode(userId, callback)
+function PaywallBefore(userId, callback)
     callback()
-    -- or something like
+    -- Check palyer's balance
     -- TriggerClientEvent("qr_code_error", sourcePlayer, "Paywall limit")
 end
 
 -- Called after a QR Code request. Store your paywall state here
-function AfterQRCode(userId, statusCode, callback)
-    callback()
+function PaywallAfter(userId, payload)
+    -- Deduce player's balance
 end
 
 function DownloadYCD(body, playerId, refresh, notify, cb)
@@ -242,15 +242,13 @@ RegisterNetEvent("requestQRCode")
 AddEventHandler("requestQRCode", function()
     local _source = source
     local userId = GetUserId(_source)
-    BeforeQRCode(userId, function()
+    PaywallBefore(userId, function()
         RequestQRCode(userId, function(statusCode, qrCodeUrl)
-            AfterQRCode(userId, statusCode, function()
-                if statusCode >= 400 then
-                    return TriggerClientEvent("qr_code_error", _source, statusCode)
-                elseif statusCode == 200 then
-                    return TriggerClientEvent("qr_code_response", _source, qrCodeUrl)
-				end
-            end)
+            if statusCode >= 400 then
+                return TriggerClientEvent("qr_code_error", _source, statusCode)
+            elseif statusCode == 200 then
+                return TriggerClientEvent("qr_code_response", _source, qrCodeUrl)
+            end
         end)
     end)
 end)
