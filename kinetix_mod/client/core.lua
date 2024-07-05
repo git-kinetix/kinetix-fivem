@@ -1,8 +1,10 @@
-TriggerServerEvent("requestAvailableEmotes")
-
 local configuration
+
+TriggerServerEvent("requestAvailableEmotes")
 TriggerServerEvent("requestConfiguration")
 
+CreateEmoteWheel({})
+CreateEmoteBagMenu({})
 
 RegisterCommand('kinetix_anim', function(source, params)
 	local dictName = params[1] .. '@animation'
