@@ -120,18 +120,6 @@ function RequestQRCode(userId, callback)
     end, "GET", "", headers)
 end
 
--- Called before a QR Code request. Add your paywall conditions here
-function PaywallBefore(userId, callback)
-    callback()
-    -- Check palyer's balance
-    -- TriggerClientEvent("paywall_error", sourcePlayer, { title = "Paywall limit", description = "Unsuficient funds" })
-end
-
--- Called after a QR Code request. Store your paywall state here
-function PaywallAfter(userId, payload)
-    -- Deduce player's balance
-end
-
 function DownloadYCD(body, playerId, refresh, notify, cb)
     local route = '/v1/emotes/' .. body.emote
     PerformHttpRequest(url .. route, function(statusCode, response, responseHeaders)
