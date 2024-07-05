@@ -18,7 +18,13 @@ end
 webhookRouter:Post("/:param", function(req, res)
     local body = req._Body
     local playerId = GetServerIdFromIdentifier(body.user)
+	local hmac = hmac_sha256(apiKey, json.encode(req._Body, { sort_keys = true }))
+	local hmacHeader = req._Raw.headers['x-signature']
 
+	if checkWebhookHMAC and hmac ~= hmacHeader then
+		print("Webhook : Invalid hmac signature")
+		return 403, { error = "Invalid hmac signature" }
+	end
     if body.status == "gta_done" then
 		local configuration = exports.kinetix_mod:getConfiguration()
 		if configuration.ugcValidation ~= nil and configuration.ugcValidation ~= false then

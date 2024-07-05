@@ -15,6 +15,7 @@ client_script {
 
 server_script {
     '@fivem-webbed/server/server.lua',
+	'server/sha256.lua',
     'server/core.lua',
     'server/webhook.lua'
 }
