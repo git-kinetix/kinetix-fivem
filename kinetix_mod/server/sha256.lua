@@ -4,7 +4,6 @@
 -- Copyright 2017 Jqqqi
 --
 
-print("HELLO")
 local sha256 = { }
 
 local MOD = 2 ^ 32
