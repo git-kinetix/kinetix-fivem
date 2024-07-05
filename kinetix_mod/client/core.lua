@@ -63,6 +63,11 @@ AddEventHandler("qr_code_error", function(statusCode)
     CreateErrorMenu(statusCode)
 end)
 
+RegisterNetEvent("paywall_error")
+AddEventHandler("paywall_error", function(error)
+    CreateErrorMenu(nil, error)
+end)
+
 RegisterNetEvent("process_update")
 AddEventHandler("process_update", function(data)
     NotifyProcessUpdate(data)

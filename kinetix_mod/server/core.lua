@@ -122,7 +122,7 @@ end
 function PaywallBefore(userId, callback)
     callback()
     -- Check palyer's balance
-    -- TriggerClientEvent("qr_code_error", sourcePlayer, "Paywall limit")
+    -- TriggerClientEvent("paywall_error", sourcePlayer, { title = "Paywall limit", description = "Unsuficient funds" })
 end
 
 -- Called after a QR Code request. Store your paywall state here

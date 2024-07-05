@@ -330,7 +330,7 @@ function CreateQRCodeMenu(url)
       lib.showContext('create_anim_qr_code')
 end
 
-function CreateErrorMenu(statusCode)
+function CreateErrorMenu(statusCode, error)
 	local errorMap = {
 		[403] = {
 			title = "Plan limit reached",
@@ -341,7 +341,12 @@ function CreateErrorMenu(statusCode)
 			description = "You cannot do new request for the moment."
 		}
 	}
-	local currentError = errorMap[statusCode]
+	local currentError
+    if error ~= nil then
+        currentError = error
+    else
+        currentError = errorMap[statusCode]
+    end
     lib.registerContext({
         id = 'error_qr_code',
         title = title,
