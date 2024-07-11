@@ -14,6 +14,10 @@ This is a FiveM resource allowing servers to integrate a User-Generated Emote fe
 > This resource relies on Kinetix's User-Generated Emote technology. The access to Kinetix's technology on FiveM servers is free, as of the latest company's policy.
 
 
+### 📚 Documentation
+
+- [Read our documentation](https://fivem.docs.kinetix.tech/)
+
 ### Prerequisite
 
 This mod requires : 
