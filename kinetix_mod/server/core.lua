@@ -23,6 +23,11 @@ function GetLicense(identifiers)
     return license
 end
 
+function GetUserId(source)
+    local playerIdentifiers = GetPlayerIdentifiers(source)
+    return GetLicense(playerIdentifiers)
+end
+
 function file_exists(name)
    local dir = GetResourcePath('kinetix_anim')
    local correctedDir = string.gsub(dir, "//", "/")
@@ -105,11 +110,6 @@ function GetAvailableEmotes(userId, callback)
         end
         callback(responseObject)
     end, "GET", "", headers)
-end
-
-function GetUserId(source)
-    local playerIdentifiers = GetPlayerIdentifiers(source)
-    return GetLicense(playerIdentifiers)
 end
 
 function RequestQRCode(userId, callback)
@@ -247,8 +247,7 @@ RegisterNetEvent("requestAvailableEmotes")
 AddEventHandler("requestAvailableEmotes", function()
     local _source = source
     local userId = GetUserId(_source)
-    local playerIdentifiers = GetPlayerIdentifiers(_source)
-    local userId = GetLicense(playerIdentifiers)
+
     GetAvailableEmotes(userId, function(emotes)
         TriggerClientEvent("emotes_response", _source, emotes)
     end)
@@ -272,8 +271,7 @@ RegisterNetEvent("deleteEmote")
 AddEventHandler("deleteEmote", function(data)
     local _source = source
     local userId = GetUserId(_source)
-    local playerIdentifiers = GetPlayerIdentifiers(_source)
-    local userId = GetLicense(playerIdentifiers)
+
 	DeleteEmote(userId, data.uuid, function()
 			GetAvailableEmotes(userId, function(emotes)
 			TriggerClientEvent("emotes_response", _source, emotes)

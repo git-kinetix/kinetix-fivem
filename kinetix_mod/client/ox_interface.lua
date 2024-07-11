@@ -14,12 +14,12 @@ local QRCodeTemplate = [[Scan this QR and follow the instructions.
 ![QRCode](https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=%s)]]
 
 
-local EmoteValidationTemplate = [[This is your emote preview.
+local EmoteValidationTemplate = [[Click on 'Validate' to add this emote to your Emote Bag and access it in-game.
 
-Do you validate the output or do you want to retry the process.
+Click on 'Retake' if you want to restart the emote generation process with another video.
 
 ![QRCode](%s)
-You have %s retry left.]]
+Retries left : %s out of %s]]
 
 function GetTitle(name)
 	return string.format(titleTemplate, name)
@@ -31,7 +31,7 @@ function CreateRootMenu()
         title = GetTitle("Menu"),
         options = {
         {
-            title = 'Loading ...',
+            title = 'Loading...',
             icon = 'fa-solid fa-circle-notch',
             iconAnimation = 'spin',
         },
@@ -169,8 +169,8 @@ function CreateProcessValidationMenu(process)
 	if retryCount < 0 then retryCount = 0 end
 	local canCancel = retryCount > 0
 	local alert = lib.alertDialog({
-		header = 'Validate Emote',
-		content = string.format(EmoteValidationTemplate, process.thumbnail, retryCount ),
+		header = 'Preview the AI-generated emote',
+		content = string.format(EmoteValidationTemplate, process.thumbnail, retryCount, configuration.ugcValidation.maxRetry),
 		centered = true,
 		cancel = canCancel,
 		size = 'md',
@@ -226,20 +226,20 @@ function CreateEmoteCreatorMenu(processes)
         ["pending"] = {
             icon = 'fa-solid fa-hourglass-half',
             color = 'white',
-			description = 'Servers are warming up ...'
+			description = 'Servers are warming up...'
         },
         ["processing"] = {
             icon = 'fa-solid fa-gear',
             color = 'yellow',
-			description = "Servers are processing ...",
+			description = "Your emote is being generated...",
 			progress = true,
         },
         ["done"] = {
             icon = 'fa-solid fa-circle-check',
-            color = 'green',
+            color = 'blue',
 			onSelect = RequestEmotePreview,
 			arrow = true,
-			description = "Waiting for validation ..."
+			description = "Emote generated. Click here to validate it."
         },
         ["validated"] = {
             icon = 'fa-solid fa-circle-check',
@@ -258,7 +258,7 @@ function CreateEmoteCreatorMenu(processes)
 				TriggerServerEvent('requestRetake', process.uuid)
 			end,
 			arrow = true,
-			description = "Waiting for a new video ..."
+			description = "Waiting for a new video..."
         },
     }
 
