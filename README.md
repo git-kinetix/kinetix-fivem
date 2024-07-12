@@ -1,4 +1,4 @@
-![https://discord.gg/aCrvQcCb7C](https://discord.com/api/guilds/1260877834751311912/widget.png?style=banner3)
+[![Discord Banner](https://discord.com/api/guilds/1260877834751311912/widget.png?style=banner3)](https://discord.gg/aCrvQcCb7C)
 
 ![https://github.com/git-kinetix/kinetix-fivem/releases](https://img.shields.io/github/downloads/git-kinetix/kinetix-fivem/total?logo=github)
 ![https://github.com/git-kinetix/kinetix-fivem/releases/latest](https://img.shields.io/github/downloads/git-kinetix/kinetix-fivem/latest/total?logo=github)
