@@ -86,9 +86,6 @@ function GetAvailableEmotes(userId, callback)
 		for _, emote in pairs(responseObject) do
 			local fileName = 'stream/' .. emote.data.uuid .. '@animation.ycd'
 			if not file_exists(fileName) then
-				print('detected missing')
-				print(fileName)
-				print('=====')
 				missing = missing + 1
 			end
 		end
@@ -162,6 +159,20 @@ function DownloadYCD(body, playerId, refresh, notify, cb)
         end, "GET", "", headers)
 
     end, "GET", "", headers)
+end
+
+function ShareEmoteWithUsers(userIds, emoteUuid)
+    for userId in userIds do
+        ShareEmoteWithUser(userId, emoteUuid)
+    end
+end
+
+function ShareEmoteWithUser(userId, emoteUuid, cb)
+    local addEmoteRoute = string.format('/v1/users/%s/emotes/%s', tostring(userId), emoteUuid)
+
+    PerformHttpRequest(url .. addEmoteRoute, function(statusCode, response)
+        cb(response)
+    end, "POST", "", headers)
 end
 
 function DeleteEmote(userId, emoteUuid, callback)
