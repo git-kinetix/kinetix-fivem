@@ -11,6 +11,8 @@ local headers = {
 
 local userExists = false
 
+GetConfig()
+
 function GetLicense(identifiers)
     local license
     for _, identifier in pairs(identifiers) do
@@ -71,6 +73,9 @@ function GetConfig(callback)
     local configRoute = string.format('/v1/virtual-world/config', tostring(userId))
 
     PerformHttpRequest(url .. configRoute, function(statusCode, response, responseHeaders)
+        if statusCode == 403 then
+            print("^1Could not authenticate to Kinetix API. Make sure your API Key is properly set.^0")
+        end
         callback(response)
     end, "GET", "", headers)
 end

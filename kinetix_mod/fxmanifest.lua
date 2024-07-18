@@ -14,7 +14,6 @@ client_script {
 }
 
 server_script {
-    '@fivem-webbed/server/server.lua',
     'server/version.lua',
 	'server/sha256.lua',
 	'server/paywall.lua',
