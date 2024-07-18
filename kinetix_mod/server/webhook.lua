@@ -1,5 +1,3 @@
-local webhookRouter = Router.new()
-
 function GetServerIdFromIdentifier(identifier)
     local wanted_id = nil
 
@@ -15,16 +13,38 @@ function GetServerIdFromIdentifier(identifier)
      return wanted_id;
 end
 
-webhookRouter:Post("/:param", function(req, res)
-    local body = req._Body
-    local playerId = GetServerIdFromIdentifier(body.user)
-	local hmac = hmac_sha256(apiKey, json.encode(req._Body, { sort_keys = true }))
-	local hmacHeader = req._Raw.headers['x-signature']
+SetHttpHandler(function(req, res)
+	local path = req.path
+	local method = req.method
+	if (path ~= "/webhook/updates") then
+		res.send("Not Found: " .. method .. " " .. path, 404)
+	else
+		req.setDataHandler(function(data)
+			req.rawBody = data
+			req.body = json.decode(data)
+			local statusCode, responseBody = webhookHandler(req, res)
+			res.writeHead(statusCode, {
+				["Access-Control-Allow-Origin"] = "*",
+				["Access-Control-Allow-Headers"] = "*",
+				["Content-Type"] = "application/json"
+			})
+			res.send(json.encode(responseBody), statusCode)
+		end)
+	end
+end)
+		
+		
+function webhookHandler(req, res)
+    local body = req.body
+	local hmac = hmac_sha256(apiKey, req.rawBody)
+	local hmacHeader = req.headers['x-signature']
 
 	if checkWebhookHMAC and hmac ~= hmacHeader then
 		print("Webhook : Invalid hmac signature")
 		return 403, { error = "Invalid hmac signature" }
 	end
+	
+	local playerId = GetServerIdFromIdentifier(body.user)
     if body.status == "gta_done" then
 		local configuration = exports.kinetix_mod:getConfiguration()
 		if configuration.ugcValidation ~= nil and configuration.ugcValidation ~= false then
@@ -40,7 +60,4 @@ webhookRouter:Post("/:param", function(req, res)
         end
     end
     return 200, {}
-end)
-
-Server.use("/webhook", webhookRouter)
-Server.listen()
+end
