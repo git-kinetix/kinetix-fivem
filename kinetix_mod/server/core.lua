@@ -11,21 +11,8 @@ local headers = {
 
 local userExists = false
 
-function GetLicense(identifiers)
-    local license
-    for _, identifier in pairs(identifiers) do
-        local match = string.match(identifier, "^license:(%w+)$")
-        if match then
-            license = match
-            break
-        end
-    end
-    return license
-end
-
 function GetUserId(source)
-    local playerIdentifiers = GetPlayerIdentifiers(source)
-    return GetLicense(playerIdentifiers)
+    return GetPlayerIdentifierByType(source, "license"):gsub("license:", "")
 end
 
 function file_exists(name)
@@ -274,8 +261,6 @@ RegisterNetEvent("renameEmote")
 AddEventHandler("renameEmote", function(data)
     local _source = source
     local userId = GetUserId(_source)
-    local playerIdentifiers = GetPlayerIdentifiers(_source)
-    local userId = GetLicense(playerIdentifiers)
     RenameEmote(userId, data.uuid, data.name, function()
 			GetAvailableEmotes(userId, function(emotes)
 			TriggerClientEvent("emotes_response", _source, emotes)
