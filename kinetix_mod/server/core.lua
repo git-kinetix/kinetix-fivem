@@ -11,8 +11,6 @@ local headers = {
 
 local userExists = false
 
-GetConfig()
-
 function GetLicense(identifiers)
     local license
     for _, identifier in pairs(identifiers) do
@@ -74,7 +72,7 @@ function GetConfig(callback)
 
     PerformHttpRequest(url .. configRoute, function(statusCode, response, responseHeaders)
         if statusCode == 403 then
-            print("^1Could not authenticate to Kinetix API. Make sure your API Key is properly set.^0")
+			print("^0[^1ERROR^0] ^3kinetix_mod^1 Could not authenticate to Kinetix API. Make sure your API Key is properly set.^0")
         end
         callback(response)
     end, "GET", "", headers)
@@ -116,10 +114,13 @@ end
 
 function RequestQRCode(userId, callback)
     local tokenRoute = '/v1/process/token'
+    -- You can attach arbitrary metadata that will be associated to the process.
+    -- This can be used for example to setup animation flags
+    local metadata = {}
     PerformHttpRequest(url .. tokenRoute .. '?userId=' .. userId, function(statusCode, response, responseHeaders)
         local responseObject = json.decode(response)
         callback(statusCode, responseObject?.url)
-    end, "GET", "", headers)
+    end, "POST", metadata, headers)
 end
 
 function DownloadYCD(body, playerId, refresh, notify, cb)
@@ -248,7 +249,7 @@ RegisterNetEvent("requestQRCode")
 AddEventHandler("requestQRCode", function()
     local _source = source
     local userId = GetUserId(_source)
-    PaywallBefore(userId, function()
+    PaywallBefore(userId, _source, function()
         RequestQRCode(userId, function(statusCode, qrCodeUrl)
             if statusCode >= 400 then
                 return TriggerClientEvent("qr_code_error", _source, statusCode)
