@@ -23,7 +23,7 @@ This is a FiveM resource allowing servers to integrate a User-Generated Emote fe
 
 This mod requires : 
 - [ox_lib](https://github.com/overextended/ox_lib)
-- [_fivem_webbed_](https://github.com/Cyntaax/fivem-webbed)
+- [_fivem_webbed_](https://github.com/Cyntaax/fivem-webbed) (not required since v0.1.9)
 
 ### Installation
 
