@@ -69,6 +69,9 @@ function GetAvailableEmotes(userId, callback)
     local emotesRoutes = string.format('/v1/users/%s/emotes', tostring(userId))
     PerformHttpRequest(url .. emotesRoutes, function(statusCode, response, responseHeaders)
         local responseObject = json.decode(response)
+        if responseObject == nil then
+          return
+        end
         -- Ensure file is properly loaded, if the webhook call was missed
 		local hasToRestart = false
 		local missing = 0
