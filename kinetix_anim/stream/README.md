@@ -1,0 +1,1 @@
+User generated emotes will be saved here.
