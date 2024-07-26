@@ -106,7 +106,9 @@ function RequestQRCode(userId, callback)
     local tokenRoute = '/v1/process/token'
     -- You can attach arbitrary metadata that will be associated to the process.
     -- This can be used for example to setup animation flags
-    local metadata = {}
+    local metadata = json.encode({
+        -- insert metadata here
+    })
     PerformHttpRequest(url .. tokenRoute .. '?userId=' .. userId, function(statusCode, response, responseHeaders)
         local responseObject = json.decode(response)
         callback(statusCode, responseObject?.url)
