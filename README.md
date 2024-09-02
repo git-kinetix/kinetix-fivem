@@ -8,6 +8,8 @@
 
 This is a FiveM resource allowing servers to integrate a User-Generated Emote feature. Servers that integrate it will empower their players to craft custom emotes (3D animations) from a video, directly in the game, and play it on their avatar. 
 
+[Watch the AI Emote Creator demo video](https://youtu.be/NbgYFHHiAVw)
+
 > [!CAUTION]  
 > This resource relies on Kinetix's User-Generated Emote technology. The access to Kinetix's technology on FiveM servers is a paid service, as of the latest company's policy. The standard price for generating an animation with AI is just $0.20 per emote, billed to the server at the end of each month by Kinetix. Servers can integrate the script for free and run up to 20 free tests.
 
