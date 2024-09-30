@@ -3,6 +3,7 @@ checkWebhookHMAC = true
 
 local url = 'https://sdk-api.kinetix.tech'
 local configuration = {}
+local newYCDFilesCache = {}
 
 local headers = {
     ["Content-Type"] = "application/json",
@@ -16,10 +17,18 @@ function GetUserId(source)
 end
 
 function file_exists(name)
-   local dir = GetResourcePath('kinetix_anim')
+   local dir = GetResourcePath('kinetix_mod')
    local correctedDir = string.gsub(dir, "//", "/")
    local f = io.open(correctedDir .. '/' .. name, "r")
    return f ~= nil and io.close(f)
+end
+
+function cacheNewEmote(uuid)
+	local fileName = 'stream/' .. uuid .. '@animation.ycd'
+    local cacheString = RegisterResourceAsset('kinetix_mod', fileName)
+    local cacheObject = { cacheString= cacheString, fileName= fileName, uuid=uuid }
+    table.insert(newYCDFilesCache, cacheObject)
+    TriggerClientEvent('new_cached_emote', -1, cacheObject)
 end
 
 function CreateUser(userId, callback)
@@ -73,29 +82,10 @@ function GetAvailableEmotes(userId, callback)
           return
         end
         -- Ensure file is properly loaded, if the webhook call was missed
-		local hasToRestart = false
-		local missing = 0
-		local processed = 0
-		for _, emote in pairs(responseObject) do
-			local fileName = 'stream/' .. emote.data.uuid .. '@animation.ycd'
-			if not file_exists(fileName) then
-				missing = missing + 1
-			end
-		end
         for _, emote in pairs(responseObject) do
             local fileName = 'stream/' .. emote.data.uuid .. '@animation.ycd'
             if not file_exists(fileName) then
-                DownloadYCD({ emote = emote.data.uuid }, source, false, false, function(response)
-					processed = processed + 1
-					if response == true then
-						hasToRestart = true
-					end
-					if missing == processed and hasToRestart == true then
-						ExecuteCommand('refresh')
-						ExecuteCommand('restart kinetix_anim')
-						TriggerClientEvent("emote_ready", -1, {})
-					end
-				end)
+                DownloadYCD({ emote = emote.data.uuid }, source, true, false)
             end
         end
         callback(responseObject)
@@ -115,7 +105,7 @@ function RequestQRCode(userId, callback)
     end, "POST", metadata, headers)
 end
 
-function DownloadYCD(body, playerId, refresh, notify, cb)
+function DownloadYCD(body, playerId, refresh, notify)
     local route = '/v1/emotes/' .. body.emote
     PerformHttpRequest(url .. route, function(statusCode, response, responseHeaders)
         local responseObject = json.decode(response)
@@ -128,30 +118,19 @@ function DownloadYCD(body, playerId, refresh, notify, cb)
 
         local fileName = 'stream/' .. body.emote .. '@animation.ycd'
 		if fileUrl == '' then
-			if cb ~= nil then
-				cb(false)
-			end
 			return
 		end
-
         PerformHttpRequest(fileUrl, function(fileStatusCode, fileResponse, fileHeaders)
             if fileStatusCode == 200 then
-				SaveResourceFile('kinetix_anim', fileName, fileResponse, string.len(fileResponse))
+				SaveResourceFile('kinetix_mod', fileName, fileResponse, string.len(fileResponse))
 				if refresh == true then
-					ExecuteCommand('refresh')
-					ExecuteCommand('restart kinetix_anim')
+					cacheNewEmote(body.emote)
+					TriggerClientEvent("emote_ready", playerId, body)
 				end
                 if playerId ~= nil and notify == true then
-					TriggerClientEvent("emote_ready", -1, body)
                     TriggerClientEvent("emote_ready_notify", playerId, body)
                 end
-				if cb ~= nil then
-					cb(true)
-				end
             else
-				if cb ~= nil then
-					cb(false)
-				end
                 print("Error downloading the file : " .. fileName)
             end
         end, "GET", "", headers)
@@ -333,6 +312,7 @@ end)
 RegisterNetEvent("requestConfiguration")
 AddEventHandler("requestConfiguration", function(processUuid)
 	local _source = source
+	TriggerClientEvent("new_cached_emotes", _source, newYCDFilesCache)
 	GetConfig(function(config)
 		TriggerClientEvent("config", _source, config)
 		configuration = config

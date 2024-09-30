@@ -71,8 +71,30 @@ RegisterNetEvent("emote_ready")
 AddEventHandler("emote_ready", function(data)
     TriggerServerEvent("requestAvailableEmotes")
 	if data.emote ~= nil then
-		RequestAnimDict(data.emote .. "@animation")
+		if not HasAnimDictLoaded(data.emote .. "@animation") then
+			RequestAnimDict(data.emote .. "@animation")
+		end
 	end
+end)
+
+RegisterNetEvent("new_cached_emote")
+AddEventHandler("new_cached_emote", function(data)
+    RegisterStreamingFileFromCache(
+    	'kinetix_mod',
+    	data.uuid .. '@animation.ycd',
+    	data.cacheString
+    )
+end)
+
+RegisterNetEvent("new_cached_emotes")
+AddEventHandler("new_cached_emotes", function(cacheData)
+	for _, data in ipairs(cacheData) do
+		RegisterStreamingFileFromCache(
+            'kinetix_mod',
+            data.uuid .. '@animation.ycd',
+            data.cacheString
+        )
+    end
 end)
 
 RegisterNetEvent("emote_ready_notify")

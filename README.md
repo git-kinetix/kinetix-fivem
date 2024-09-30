@@ -49,7 +49,7 @@ Extract the zip file into your server's resource folder.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](settings.png)
 
-- Add these ACE rules in your server config
+- Add these ACE rules in your server config (not required since v0.2.0)
   ```
   add_ace resource.kinetix_mod command.restart allow
   add_ace resource.kinetix_mod command.start allow
