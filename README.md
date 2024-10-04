@@ -21,7 +21,7 @@ This is a FiveM resource allowing servers to integrate a User-Generated Emote fe
 ### Prerequisite
 
 This mod requires : 
-- [ox_lib](https://github.com/overextended/ox_lib)
+- [ox_lib](https://github.com/overextended/ox_lib) (for basic integration only - you can use your own interface / menu system otherwise)
 - [_fivem_webbed_](https://github.com/Cyntaax/fivem-webbed) (not required since v0.1.10)
 
 ### Installation
